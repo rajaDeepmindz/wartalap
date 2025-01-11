@@ -24,7 +24,6 @@ export default function App() {
   // const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const callContainerRef = useRef(null); // Ref for call container
   const roomID = getUrlParams().get("roomID") || randomID(20);
-alert(isMobile)
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
