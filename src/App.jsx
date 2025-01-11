@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { isMobile } from "react-device-detect";
 
@@ -22,27 +22,29 @@ function getUrlParams(url = window.location.href) {
 export default function App() {
   const [isMobileDevice, setIsMobileDevice] = useState(isMobile);
   const callContainerRef = useRef(null); // Ref for call container
-  const roomID = getUrlParams().get("roomID") || randomID(20);
-
+  const roomID = getUrlParams().get("roomID") || randomID(5);
 
   useEffect(() => {
     // Function to ask for permissions
     const requestPermissions = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
+        const constraints = {
+          video: {
+            facingMode: { exact: "environment" },
+            width: { ideal: 1280 }, // Set ideal width (for mobile)
+            height: { ideal: 720 }, // Set ideal height (for mobile)
+          },
           audio: true,
-        });
+        };
 
-        // If permission is granted, the media stream is returned
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         console.log("Permissions granted", stream);
 
-        // Optionally, you can attach the stream to a video element:
+        // Optionally, attach the stream to a video element
         const videoElement = document.getElementById("video-element");
         if (videoElement) {
           videoElement.srcObject = stream;
         }
-
       } catch (error) {
         console.error("Permission denied or error occurred:", error);
         alert("Please grant permissions for the camera and microphone.");
@@ -56,8 +58,6 @@ export default function App() {
       console.error("Media devices not supported.");
     }
   }, []);
-
-
 
   useEffect(() => {
     const handleResize = () => {
@@ -81,8 +81,8 @@ export default function App() {
       appID,
       serverSecret,
       roomID,
-      randomID(20), // User ID
-      "User_" + randomID(20) // User Name
+      randomID(5), // User ID
+      "User_" + randomID(3) // User Name
     );
 
     // Create and join the room
@@ -94,10 +94,9 @@ export default function App() {
       sharedLinks: [
         {
           name: "Personal link",
-          url:
-            `${window.location.protocol}//${window.location.host}${window.location.pathname}?roomID=${encodeURIComponent(
-              roomID
-            )}`,
+          url: `${window.location.protocol}//${window.location.host}${
+            window.location.pathname
+          }?roomID=${encodeURIComponent(roomID)}`,
         },
       ],
       scenario: {
@@ -133,7 +132,7 @@ export default function App() {
       {/* Check if it's a mobile device or desktop and render different UI accordingly */}
       {isMobileDevice ? (
         // Mobile UI
-        <div className="flex items-center justify-center w-full h-screen ">
+        <div className="flex items-center justify-center w-[100vw] h-screen ">
           <div
             ref={callContainerRef}
             className="w-full h-screen sm:h-[calc(100vh-4rem)] sm:w-[calc(100vw-2rem)] p-2 sm:p-4 bg-white rounded-md shadow-lg"
