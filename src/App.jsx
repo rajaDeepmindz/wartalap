@@ -24,6 +24,41 @@ export default function App() {
   const callContainerRef = useRef(null); // Ref for call container
   const roomID = getUrlParams().get("roomID") || randomID(20);
 
+
+  useEffect(() => {
+    // Function to ask for permissions
+    const requestPermissions = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+
+        // If permission is granted, the media stream is returned
+        console.log("Permissions granted", stream);
+
+        // Optionally, you can attach the stream to a video element:
+        const videoElement = document.getElementById("video-element");
+        if (videoElement) {
+          videoElement.srcObject = stream;
+        }
+
+      } catch (error) {
+        console.error("Permission denied or error occurred:", error);
+        alert("Please grant permissions for the camera and microphone.");
+      }
+    };
+
+    // Call the permission request on mount
+    if (navigator.mediaDevices) {
+      requestPermissions();
+    } else {
+      console.error("Media devices not supported.");
+    }
+  }, []);
+
+
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobileDevice(window.innerWidth <= 768);
